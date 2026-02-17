@@ -40,6 +40,10 @@ public class MainService {
                 .distinct()
                 .toList();
     }
+
+    //todo ici faire la class pour AllPersonsWithMedical
+    // doit retourner nom, prenom, age, email avec les medicaments et les allergies
+    // utiliser un DTO
 }
 
 
