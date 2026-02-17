@@ -11,10 +11,12 @@ import java.util.stream.Collectors;
 public class PersonService {
 
    private final PersonRepository personRepository;
+    private final DataService dataService;
 
-   public PersonService(PersonRepository personRepository) {
+    public PersonService(PersonRepository personRepository, DataService dataService) {
        this.personRepository = personRepository;
-   }
+        this.dataService = dataService;
+    }
 
    public List<String> getEmailsByCity(String city) {
        return personRepository.findAll()
@@ -32,5 +34,9 @@ public class PersonService {
                .map(person -> person.getAddress())
                .distinct()
                .collect(Collectors.toList());
+   }
+
+   public List<Person> findAll() {
+       return dataService.getData().getPersons();
    }
 }
