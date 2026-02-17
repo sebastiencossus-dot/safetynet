@@ -2,7 +2,9 @@ package com.example.controller;
 
 import com.example.model.Person;
 import com.example.service.DataService;
+import com.example.service.PersonService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -11,9 +13,11 @@ import java.util.List;
 public class PersonController {
 
     private final DataService dataService;
+    private final PersonService personService;
 
-    public PersonController(DataService dataService) {
+    public PersonController(DataService dataService, PersonService personService) {
         this.dataService = dataService;
+        this.personService = personService;
     }
 
     @GetMapping("/persons")
@@ -21,11 +25,13 @@ public class PersonController {
         return dataService.getData().getPersons();
     }
 
-    @GetMapping("/persons/city")
-    public List<Person> getPersonsByCity(String city) {
-        return dataService.getData().getPersons()
-                .stream()
-                .filter(p -> p.getCity().equalsIgnoreCase(city))
-                .toList();
+    @GetMapping("/emailbycity")
+    public List<String> getEmailByCity(@RequestParam String city) {
+        return personService.getEmailsByCity(city);
+    }
+
+    @GetMapping("/adressbycity")
+    public List<String> getAdressByCity(@RequestParam String city) {
+        return  personService.getAdressByCity(city);
     }
 }

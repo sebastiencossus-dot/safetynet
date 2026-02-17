@@ -5,6 +5,7 @@ import java.util.List;
 public class Data {
     private List<Person> persons;
     private List<Firestation> firestations;
+    private List<Medicalrecord> medicalrecords;
 
     public List<Medicalrecord> getMedicalrecords() {
         return medicalrecords;
@@ -30,6 +31,6 @@ public class Data {
         this.persons = persons;
     }
 
-    private List<Medicalrecord> medicalrecords;
+
 
 }
