@@ -1,6 +1,6 @@
 package com.example.model;
 
-public class firestations {
+public class Firestation {
     private String address;
     private String station;
 
