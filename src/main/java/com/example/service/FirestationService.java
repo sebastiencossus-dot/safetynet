@@ -47,5 +47,14 @@ public class FirestationService {
                 .distinct()
                 .toList();
     }
-
+// todo methode pour recupere les personnes a une adresse avec le numero de station, le nom, prenom, phone age et medical
+    // Trouver la station via l’adresse
+    //
+    //Trouver les personnes à cette adresse
+    //
+    //Calculer l’âge
+    //
+    //Transformer chaque personne en ResidentDTO
+    //
+    //Retourner FireAddressDTO
 }
