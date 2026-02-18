@@ -1,6 +1,7 @@
 package com.example.service;
 
 import com.example.model.Person;
+import com.example.repository.FirestationRepository;
 import com.example.repository.MedicalrecordRepository;
 import com.example.repository.PersonRepository;
 import com.example.service.DTO.PersonInfoDTO;
@@ -14,11 +15,12 @@ public class PersonService {
 
    private final PersonRepository personRepository;
    private final MedicalrecordRepository medicalrecordRepository;
+   private final FirestationRepository firestationRepository;
 
-
-    public PersonService(PersonRepository personRepository, MedicalrecordRepository medicalrecordRepository) {
+    public PersonService(PersonRepository personRepository, MedicalrecordRepository medicalrecordRepository, FirestationRepository firestationRepository) {
        this.personRepository = personRepository;
        this.medicalrecordRepository = medicalrecordRepository;
+       this.firestationRepository = firestationRepository;
     }
 
    public List<String> getEmailsByCity(String city) {

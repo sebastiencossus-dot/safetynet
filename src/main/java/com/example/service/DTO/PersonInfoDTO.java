@@ -14,10 +14,39 @@ public record PersonInfoDTO (
             List<String> allergies
     ) {
 
+    @Override
+    public String firstName() {
+        return firstName;
+    }
 
+    @Override
+    public String lastName() {
+        return lastName;
+    }
 
+    @Override
+    public String address() {
+        return address;
+    }
 
+    @Override
+    public String email() {
+        return email;
+    }
 
+    @Override
+    public int age() {
+        return age;
+    }
 
+    @Override
+    public List<String> medications() {
+        return medications;
+    }
+
+    @Override
+    public List<String> allergies() {
+        return allergies;
+    }
 }
 
