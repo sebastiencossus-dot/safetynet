@@ -12,5 +12,12 @@ public record PersonInfoDTO (
             int age,
             List<String> medications,
             List<String> allergies
-    ) {}
+    ) {
+
+
+
+
+
+
+}
 

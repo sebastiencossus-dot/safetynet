@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.model.Person;
+import com.example.service.DTO.PersonInfoDTO;
 import com.example.service.DataService;
 import com.example.service.PersonService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +29,12 @@ public class PersonController {
     @GetMapping("/emailbycity")
     public List<String> getEmailByCity(@RequestParam String city) {
         return personService.getEmailsByCity(city);
+    }
+
+    @GetMapping("/personInfo")
+    public List<PersonInfoDTO> getPersonInfo(@RequestParam String firstName, @RequestParam String lastName) {
+
+        return personService.getPersonInfo(firstName, lastName);
     }
 
     @GetMapping("/adressbycity")

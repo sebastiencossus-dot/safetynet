@@ -30,6 +30,12 @@ public class FirestationController {
         return firestationService.getStationByAddress(station);
     }
 
+    @GetMapping("/phoneAlert")
+    public List<String> getPhoneAlert(@RequestParam String station) {
+        return firestationService.getPhonesByStation(station);
+    }
+
+
 
 }
 
