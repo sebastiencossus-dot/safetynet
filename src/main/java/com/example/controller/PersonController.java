@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.model.Person;
+import com.example.service.DTO.ChildAlertDTO;
 import com.example.service.DTO.PersonInfoDTO;
 import com.example.service.DataService;
 import com.example.service.PersonService;
@@ -40,5 +41,11 @@ public class PersonController {
     @GetMapping("/adressbycity")
     public List<String> getAdressByCity(@RequestParam String city) {
         return  personService.getAdressByCity(city);
+    }
+
+    @GetMapping("/childAlert")
+    public List<ChildAlertDTO> getChildByAddress(@RequestParam String address) throws Exception{
+
+        return personService.getChildByAddress(address);
     }
 }

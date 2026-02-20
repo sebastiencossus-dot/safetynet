@@ -7,7 +7,7 @@ public record ChildAlertDTO (
     String firstName,
     String lastName,
     int age,
-    List<FoyerDTO> foyer
+    List<String> foyer
 ){
 
 }

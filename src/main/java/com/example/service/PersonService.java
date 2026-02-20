@@ -1,14 +1,18 @@
 package com.example.service;
 
-import com.example.model.Person;
+import com.example.model.Medicalrecord;
 import com.example.repository.FirestationRepository;
 import com.example.repository.MedicalrecordRepository;
 import com.example.repository.PersonRepository;
+import com.example.service.DTO.ChildAlertDTO;
 import com.example.service.DTO.PersonInfoDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.util.Arrays.stream;
 
 @Service
 public class PersonService {
@@ -83,13 +87,44 @@ public class PersonService {
         return java.time.Period.between(birth, java.time.LocalDate.now()).getYears();
     }
 
-   //todo faire liste d'enfants ( -18 ) habitant a l'adresse et retourner prenom, nom, age et liste des autres membres du foyer
-   public List<.......> getChildByAddress(String address) {
+   public List<ChildAlertDTO> getChildByAddress(String address) {
+        //recherche des persons a l'adresse
+       var personsAtAddress = personRepository.findAll()
+               .stream()
+               .filter(p -> p.getAddress().equalsIgnoreCase(address))
+               .toList();
 
-        //recherche des person a l'adresse
+       var medicalRecords = medicalrecordRepository.findAll();
 
-       // recherche des mineurs
+       return personsAtAddress.stream()
+               .map(person -> {
 
-       // ajout du reste du foyer
+                   var medicalRecord = medicalRecords.stream()
+                           .filter(m -> m.getFirstName().equalsIgnoreCase(person.getFirstName())
+                                   && m.getLastName().equalsIgnoreCase(person.getLastName()))
+                           .findFirst()
+                           .orElse(null);
+
+                   if (medicalRecord == null) return null;
+
+                   int age = calculateAge(medicalRecord.getBirthdate());
+                // rechercher des mineurs
+                   if (age >= 18) return null;
+
+                   List<String> foyer = personsAtAddress.stream()
+                           .filter(p -> !(p.getFirstName().equalsIgnoreCase(person.getFirstName())
+                                   && p.getLastName().equalsIgnoreCase(person.getLastName())))
+                           .map(p -> p.getFirstName() + " " + p.getLastName())
+                           .toList();
+
+                   return new ChildAlertDTO(
+                           person.getFirstName(),
+                           person.getLastName(),
+                           age,
+                           foyer
+                   );
+               })
+               .filter(child -> child != null)
+               .toList();
    }
 }
