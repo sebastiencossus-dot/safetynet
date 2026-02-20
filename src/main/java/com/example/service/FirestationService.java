@@ -1,11 +1,16 @@
 package com.example.service;
 
 import com.example.model.Firestation;
+import com.example.model.Medicalrecord;
 import com.example.repository.FirestationRepository;
+import com.example.repository.MedicalrecordRepository;
 import com.example.repository.PersonRepository;
+import com.example.service.DTO.ResidentsDTO;
+import com.example.service.DTO.StationAdressDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,11 +19,13 @@ public class FirestationService {
 
     private final FirestationRepository firestationRepository;
     private final PersonRepository personRepository;
+    private final MedicalrecordRepository medicalrecordRepository;
 
 
-    public FirestationService(FirestationRepository firestationRepository, PersonRepository personRepository) {
+    public FirestationService(FirestationRepository firestationRepository, PersonRepository personRepository, MedicalrecordRepository medicalrecordRepository) {
         this.firestationRepository = firestationRepository;
         this.personRepository = personRepository;
+        this.medicalrecordRepository = medicalrecordRepository;
     }
 
 
@@ -47,14 +54,56 @@ public class FirestationService {
                 .distinct()
                 .toList();
     }
-// todo methode pour recupere les personnes a une adresse avec le numero de station, le nom, prenom, phone age et medical
-    // Trouver la station via l’adresse
-    //
-    //Trouver les personnes à cette adresse
-    //
-    //Calculer l’âge
-    //
-    //Transformer chaque personne en ResidentDTO
-    //
-    //Retourner FireAddressDTO
+
+    public StationAdressDTO getStationForAddress(String address) throws Exception {
+        // Trouver la station via l’adresse
+        Optional<Firestation> firestation = firestationRepository.findAll()
+                .stream()
+                .filter(f -> f.getAddress().equalsIgnoreCase(address))
+                .findFirst();
+
+        if (firestation.isEmpty()) {
+            throw new Exception("Pas de caserne a cette adresse");
+        }
+
+        //Trouver les personnes à cette adresse
+        List<Medicalrecord> medicalrecords = medicalrecordRepository.findAll();
+
+        List<ResidentsDTO> residents = personRepository.findAll()
+                .stream()
+                .filter(p -> p.getAddress().equalsIgnoreCase(address))
+                .map(person -> {
+
+                     Optional<Medicalrecord> medicalrecord = medicalrecords.stream()
+                            .filter(m -> m.getFirstName().equalsIgnoreCase(person.getFirstName())
+                                    && m.getLastName().equalsIgnoreCase(person.getLastName()))
+                            .findFirst();
+        //Calculer l’âge
+                    int age = medicalrecord.isEmpty()
+                            ? 0
+                            : calculateAge(medicalrecord.get().getBirthdate());
+
+        //Transformer chaque personne en ResidentDTO
+                    return new ResidentsDTO(
+                            person.getFirstName(),
+                            person.getLastName(),
+                            person.getPhone(),
+                            age,
+                            medicalrecord != null ? medicalrecord.get().getMedications() : List.of(),
+                            medicalrecord != null ? medicalrecord.get().getAllergies() : List.of()
+                    );
+                })
+                .toList();
+        //Retourner StationAdressDTO
+        return new StationAdressDTO(firestation.get().getStation(), residents);
+    }
+
+    private int calculateAge(String birthdate) {
+        java.time.LocalDate birth = java.time.LocalDate.parse(
+                birthdate,
+                java.time.format.DateTimeFormatter.ofPattern("MM/dd/yyyy")
+        );
+        return java.time.Period.between(birth, java.time.LocalDate.now()).getYears();
+    }
+
 }

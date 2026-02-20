@@ -6,13 +6,13 @@ public record StationAdressDTO (
         String station,
         List<ResidentsDTO> residents
 ) {
-    @Override
-    public String station() {
-        return station;
-    }
-
-    @Override
-    public List<ResidentsDTO> residents() {
-        return residents;
-    }
+//    @Override
+//    public String station() {
+//        return station;
+//    }
+//
+//    @Override
+//    public List<ResidentsDTO> residents() {
+//        return residents;
+//    }
 }

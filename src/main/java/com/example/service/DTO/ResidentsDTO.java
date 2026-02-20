@@ -1,12 +1,18 @@
 package com.example.service.DTO;
 
+import java.util.List;
+
 public record ResidentsDTO (
         String firstName,
         String lastName,
         String phone,
-        int age
+        int age,
+        List<String> medications,
+        List<String> allergies
 
 ) {
+
+
     @Override
     public String firstName() {
         return firstName;

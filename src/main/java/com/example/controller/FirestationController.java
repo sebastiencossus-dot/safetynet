@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.model.Firestation;
+import com.example.service.DTO.StationAdressDTO;
 import com.example.service.DataService;
 import com.example.service.FirestationService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +21,7 @@ public class FirestationController {
         this.firestationService = firestationService;
     }
 
-    @GetMapping("/fire")
+    @GetMapping("/fire-stations")
     public List<Firestation> getAllFirestation() {
         return dataService.getData().getFirestations();
     }
@@ -35,7 +36,10 @@ public class FirestationController {
         return firestationService.getPhonesByStation(station);
     }
 
-
+    @GetMapping("/fire")
+    public StationAdressDTO getStationForAddress(@RequestParam String address) throws Exception {
+        return firestationService.getStationForAddress(address);
+    }
 
 }
 
