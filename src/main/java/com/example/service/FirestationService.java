@@ -106,4 +106,7 @@ public class FirestationService {
         return java.time.Period.between(birth, java.time.LocalDate.now()).getYears();
     }
 
+    //todo fait la listye des foyers deservi par la station et sortir les membres avec nom, prenom, age et medical
+
+
 }
