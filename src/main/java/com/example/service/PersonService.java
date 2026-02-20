@@ -75,11 +75,21 @@ public class PersonService {
                 .toList();
     }
 
-    private int calculateAge(String birthdate) {
+   private int calculateAge(String birthdate) {
         java.time.LocalDate birth = java.time.LocalDate.parse(
                 birthdate,
                 java.time.format.DateTimeFormatter.ofPattern("MM/dd/yyyy")
         );
         return java.time.Period.between(birth, java.time.LocalDate.now()).getYears();
     }
+
+   //todo faire liste d'enfants ( -18 ) habitant a l'adresse et retourner prenom, nom, age et liste des autres membres du foyer
+   public List<.......> getChildByAddress(String address) {
+
+        //recherche des person a l'adresse
+
+       // recherche des mineurs
+
+       // ajout du reste du foyer
+   }
 }
