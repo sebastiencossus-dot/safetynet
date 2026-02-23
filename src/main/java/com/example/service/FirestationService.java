@@ -5,10 +5,7 @@ import com.example.model.Medicalrecord;
 import com.example.repository.FirestationRepository;
 import com.example.repository.MedicalrecordRepository;
 import com.example.repository.PersonRepository;
-import com.example.service.DTO.FoyerByStationDTO;
-import com.example.service.DTO.MemberOfFoyerDTO;
-import com.example.service.DTO.ResidentsDTO;
-import com.example.service.DTO.StationAdressDTO;
+import com.example.service.DTO.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -17,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -83,22 +81,94 @@ public class FirestationService {
         var medicalRecords = medicalrecordRepository.findAll();
 
         // Récupérer les adresses couvertes
-        var addresses = firestations.stream().filter(f -> stations.contains(f.getStation())).map(f -> f.getAddress()).toList();
+        var addresses = firestations
+                .stream()
+                .filter(f -> stations.contains(f.getStation()))
+                .map(f -> f.getAddress()).toList();
 
         // Grouper les personnes par adresse
-        return addresses.stream().distinct().map(address -> {
+        return addresses
+                .stream().distinct()
+                .map(address -> {
 
-            var residents = persons.stream().filter(p -> p.getAddress().equalsIgnoreCase(address)).map(person -> {
 
-                var medicalRecord = medicalRecords.stream().filter(m -> m.getFirstName().equalsIgnoreCase(person.getFirstName()) && m.getLastName().equalsIgnoreCase(person.getLastName())).findFirst().orElse(null);
+                    var residents = persons.stream().filter(p -> p.getAddress().equalsIgnoreCase(address)).map(person -> {
 
-                int age = medicalRecord != null ? calculateAge(medicalRecord.getBirthdate()) : 0;
 
-                return new MemberOfFoyerDTO(person.getFirstName(), person.getLastName(), age, medicalRecord != null ? medicalRecord.getMedications() : List.of(), medicalRecord != null ? medicalRecord.getAllergies() : List.of());
+                        var medicalRecord = medicalRecords.stream().filter(m -> m.getFirstName().equalsIgnoreCase(person.getFirstName()) && m.getLastName().equalsIgnoreCase(person.getLastName())).findFirst().orElse(null);
+
+
+                        int age = medicalRecord != null ? calculateAge(medicalRecord.getBirthdate()) : 0;
+
+
+                        return new MemberOfFoyerDTO(person.getFirstName(), person.getLastName(), age, medicalRecord != null ? medicalRecord.getMedications() : List.of(), medicalRecord != null ? medicalRecord.getAllergies() : List.of());
+
+                    }).toList();
+
+                return new FoyerByStationDTO(address, residents);
             }).toList();
-
-            return new FoyerByStationDTO(address, residents);
-        }).toList();
     }
+
+    // todo doit retourner la list des personnes couverte par une station avec le prenom, nom, adresse, phone et un decompte du nombre d'adulte et d'enfants
+    public FirestationCoverageDTO getPersonsByStation(String station) {
+
+        var firestations = firestationRepository.findAll();
+        var persons = personRepository.findAll();
+        var medicalRecords = medicalrecordRepository.findAll();
+
+        // Récupérer les adresses couvertes par la station
+        var addresses = firestations.stream()
+                .filter(f -> f.getStation().equals(station))
+                .map(f -> f.getAddress())
+                .toList();
+
+        // Récupérer les personnes vivant à ces adresses
+        var coveredPersons = persons.stream()
+                .filter(p -> addresses.contains(p.getAddress()))
+                .toList();
+
+        int adultCount = 0;
+        int childCount = 0;
+
+        // Calculer le nombre d’adultes et d’enfants
+        for (var person : coveredPersons) {
+
+            var medicalRecord = medicalRecords.stream()
+                    .filter(m -> m.getFirstName().equalsIgnoreCase(person.getFirstName())
+                            && m.getLastName().equalsIgnoreCase(person.getLastName()))
+                    .findFirst()
+                    .orElse(null);
+
+            int age = medicalRecord != null
+                    ? calculateAge(medicalRecord.getBirthdate())
+                    : 0;
+
+            if (age < 18) {
+                childCount++;
+            } else {
+                adultCount++;
+            }
+        }
+
+        // Construire la liste des personnes (sans âge)
+        var personDTOList = coveredPersons.stream()
+                .map(person -> new PersonByStationDTO(
+                        person.getFirstName(),
+                        person.getLastName(),
+                        person.getAddress(),
+                        person.getPhone()
+                ))
+                .toList();
+
+        // Retourner le DTO final
+        return new FirestationCoverageDTO(
+                personDTOList,
+                adultCount,
+                childCount
+        );
+    }
+
+
+
 
 }
