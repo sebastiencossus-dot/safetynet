@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.model.Firestation;
+import com.example.service.DTO.FoyerByStationDTO;
 import com.example.service.DTO.StationAdressDTO;
 import com.example.service.DataService;
 import com.example.service.FirestationService;
@@ -39,6 +40,13 @@ public class FirestationController {
     @GetMapping("/fire")
     public StationAdressDTO getStationForAddress(@RequestParam String address) throws Exception {
         return firestationService.getStationForAddress(address);
+    }
+
+    @GetMapping("/flood/station")
+    public List<FoyerByStationDTO> getFlood(
+            @RequestParam List<String> station) {
+
+        return FirestationService.getFloodByStations(station);
     }
 
 }
