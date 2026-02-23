@@ -6,9 +6,7 @@ import com.example.service.DTO.FoyerByStationDTO;
 import com.example.service.DTO.StationAdressDTO;
 import com.example.service.DataService;
 import com.example.service.FirestationService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -57,5 +55,22 @@ public class FirestationController {
         return firestationService.getPersonsByStation(station);
     }
 
+    @PostMapping("/firestation")
+    public Firestation add(@RequestBody Firestation firestation) {
+        return firestationService.addFirestation(firestation);
+    }
+
+    @PutMapping("/firestation")
+    public Firestation update(@RequestBody Firestation firestation) {
+        return firestationService.updateFirestation(firestation);
+    }
+
+    @DeleteMapping("/firestation")
+    public String delete(@RequestParam String address) {
+
+        boolean deleted = firestationService.deleteFirestation(address);
+
+        return deleted ? "Firestation deleted" : "Not found";
+    }
 }
 

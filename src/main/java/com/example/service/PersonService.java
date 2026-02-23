@@ -1,6 +1,7 @@
 package com.example.service;
 
-import com.example.model.Medicalrecord;
+
+import com.example.model.Person;
 import com.example.repository.FirestationRepository;
 import com.example.repository.MedicalrecordRepository;
 import com.example.repository.PersonRepository;
@@ -9,10 +10,10 @@ import com.example.service.DTO.PersonInfoDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.stream;
+
 
 @Service
 public class PersonService {
@@ -127,4 +128,41 @@ public class PersonService {
                .filter(child -> child != null)
                .toList();
    }
+
+    public Person addPerson(Person person) {
+
+        personRepository.findAll().add(person);
+
+        return person;
+    }
+
+    public Person updatePerson(Person updatedPerson) {
+
+        var persons = personRepository.findAll();
+
+        for (int i = 0; i < persons.size(); i++) {
+
+            Person existing = persons.get(i);
+
+            if (existing.getFirstName().equalsIgnoreCase(updatedPerson.getFirstName())
+                    && existing.getLastName().equalsIgnoreCase(updatedPerson.getLastName())) {
+
+                persons.set(i, updatedPerson);
+                return updatedPerson;
+            }
+        }
+
+        return null; // si non trouvé
+    }
+
+    public boolean deletePerson(String firstName, String lastName) {
+
+        var persons = personRepository.findAll();
+
+        return persons.removeIf(p ->
+                p.getFirstName().equalsIgnoreCase(firstName)
+                        && p.getLastName().equalsIgnoreCase(lastName)
+        );
+    }
+
 }

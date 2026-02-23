@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.model.Firestation;
 import com.example.model.Medicalrecord;
+import com.example.model.Person;
 import com.example.repository.FirestationRepository;
 import com.example.repository.MedicalrecordRepository;
 import com.example.repository.PersonRepository;
@@ -168,7 +169,38 @@ public class FirestationService {
         );
     }
 
+    public Firestation addFirestation(Firestation firestation) {
 
+        firestationRepository.findAll().add(firestation);
 
+        return firestation;
+    }
 
+    // PUT
+    public Firestation updateFirestation(Firestation updatedFirestation) {
+
+        var firestations = firestationRepository.findAll();
+
+        for (int i = 0; i < firestations.size(); i++) {
+
+            Firestation existing = firestations.get(i);
+
+            if (existing.getAddress().equalsIgnoreCase(updatedFirestation.getAddress())) {
+                firestations.set(i, updatedFirestation);
+                return updatedFirestation;
+            }
+        }
+
+        return null;
+    }
+
+    // DELETE
+    public boolean deleteFirestation(String address) {
+
+        return firestationRepository.findAll()
+                .removeIf(f -> f.getAddress().equalsIgnoreCase(address));
+    }
 }
+
+
+

@@ -5,9 +5,7 @@ import com.example.service.DTO.ChildAlertDTO;
 import com.example.service.DTO.PersonInfoDTO;
 import com.example.service.DataService;
 import com.example.service.PersonService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -48,4 +46,24 @@ public class PersonController {
 
         return personService.getChildByAddress(address);
     }
+
+    @PostMapping("/person")
+    public Person addPerson(@RequestBody Person person) {
+        return personService.addPerson(person);
+    }
+
+    @PutMapping("/person")
+    public Person updatePerson(@RequestBody Person person) {
+        return personService.updatePerson(person);
+    }
+
+    @DeleteMapping("/person")
+    public String deletePerson(@RequestParam String firstName,
+                               @RequestParam String lastName) {
+
+        boolean deleted = personService.deletePerson(firstName, lastName);
+
+        return deleted ? "Person deleted" : "Person not found";
+    }
+
 }
