@@ -109,7 +109,7 @@ public class FirestationService {
             }).toList();
     }
 
-    // todo doit retourner la list des personnes couverte par une station avec le prenom, nom, adresse, phone et un decompte du nombre d'adulte et d'enfants
+
     public FirestationCoverageDTO getPersonsByStation(String station) {
 
         var firestations = firestationRepository.findAll();
