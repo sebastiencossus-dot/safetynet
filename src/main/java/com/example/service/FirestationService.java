@@ -2,7 +2,7 @@ package com.example.service;
 
 import com.example.model.Firestation;
 import com.example.model.Medicalrecord;
-import com.example.model.Person;
+
 import com.example.repository.FirestationRepository;
 import com.example.repository.MedicalrecordRepository;
 import com.example.repository.PersonRepository;
@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
+
 import java.util.stream.Collectors;
 
 @Service
