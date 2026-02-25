@@ -4,9 +4,7 @@ import com.example.model.Person;
 import com.example.repository.FirestationRepository;
 import com.example.repository.MedicalrecordRepository;
 import com.example.repository.PersonRepository;
-import com.example.service.DTO.FoyerByStationDTO;
-import com.example.service.DTO.ResidentsDTO;
-import com.example.service.DTO.StationAdressDTO;
+import com.example.service.DTO.*;
 import com.example.service.FirestationService;
 
 import org.junit.jupiter.api.Test;
@@ -15,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -203,4 +202,184 @@ public class FirestationServiceTest {
         assertEquals("dufour", foyer2.Members().get(0).lastName());
 
     }
+
+    @Test
+    void shouldReturnPersonsByStation() {
+
+        // ===== GIVEN =====
+
+        String station = "8";
+
+        Firestation firestation = new Firestation();
+        firestation.setAddress("55 av");
+        firestation.setStation("8");
+
+        Person adult = new Person();
+        adult.setFirstName("Sebastien");
+        adult.setLastName("Cossus");
+        adult.setAddress("55 av");
+        adult.setPhone("0606060606");
+
+        Person child = new Person();
+        child.setFirstName("Dylan");
+        child.setLastName("Cossus");
+        child.setAddress("55 av");
+        child.setPhone("0707070707");
+
+        Person person3 = new Person();
+        person3.setFirstName("Anne");
+        person3.setLastName("dufour");
+        person3.setAddress("55 av");
+        person3.setPhone("0202020202");
+
+        Medicalrecord adultRecord = new Medicalrecord();
+        adultRecord.setFirstName("Sebastien");
+        adultRecord.setLastName("Cossus");
+        adultRecord.setBirthdate("07/19/1974"); // adulte
+
+        Medicalrecord childRecord = new Medicalrecord();
+        childRecord.setFirstName("Dylan");
+        childRecord.setLastName("Cossus");
+        childRecord.setBirthdate("07/19/2015"); // enfant
+
+        Medicalrecord medicalrecord3 = new Medicalrecord();
+        medicalrecord3.setFirstName("Anne");
+        medicalrecord3.setLastName("Dufour");
+        medicalrecord3.setBirthdate("07/19/2000");
+
+
+        when(firestationRepository.findAll())
+                .thenReturn(List.of(firestation));
+
+        when(personRepository.findAll())
+                .thenReturn(List.of(adult, child, person3));
+
+        when(medicalrecordRepository.findAll())
+                .thenReturn(List.of(adultRecord, childRecord, medicalrecord3));
+
+        // ===== WHEN =====
+        FirestationCoverageDTO result =
+                firestationService.getPersonsByStation(station);
+
+        // ===== THEN =====
+
+        // Vérifie nombre de personnes
+        assertEquals(3, result.persons().size());
+
+        // Vérifie comptage
+        assertEquals(2, result.adultCount());
+        assertEquals(1, result.childCount());
+
+        // Vérifie contenu
+        PersonByStationDTO firstPerson = result.persons().get(0);
+        assertNotNull(firstPerson.firstName());
+        assertNotNull(firstPerson.phone());
+    }
+
+    @Test
+    void shouldAddFirestation() {
+
+
+        Firestation firestation = new Firestation();
+        firestation.setAddress("55 av");
+        firestation.setStation("8");
+
+        List<Firestation> firestations = new ArrayList<>();
+
+        when(firestationRepository.findAll())
+                .thenReturn(firestations);
+
+
+        Firestation result = firestationService.addFirestation(firestation);
+
+
+        assertEquals(1, firestations.size());
+        assertEquals("55 av", firestations.get(0).getAddress());
+        assertEquals(result, firestation);
+    }
+
+    @Test
+    void shouldUpdateFirestation() {
+
+        // GIVEN
+        Firestation existing = new Firestation();
+        existing.setAddress("55 av");
+        existing.setStation("8");
+
+        Firestation updated = new Firestation();
+        updated.setAddress("55 av");
+        updated.setStation("10");
+
+        List<Firestation> firestations = new ArrayList<>();
+        firestations.add(existing);
+
+        when(firestationRepository.findAll())
+                .thenReturn(firestations);
+
+        // WHEN
+        Firestation result =
+                firestationService.updateFirestation(updated);
+
+        // THEN
+        assertNotNull(result);
+        assertEquals("10", firestations.get(0).getStation());
+    }
+
+    @Test
+    void shouldReturnNullWhenUpdateNotFound() {
+
+        // GIVEN
+        Firestation updated = new Firestation();
+        updated.setAddress("99 av");
+        updated.setStation("3");
+
+        when(firestationRepository.findAll())
+                .thenReturn(new ArrayList<>());
+
+        // WHEN
+        Firestation result =
+                firestationService.updateFirestation(updated);
+
+        // THEN
+        assertNull(result);
+    }
+
+    @Test
+    void shouldDeleteFirestation() {
+
+        // GIVEN
+        Firestation firestation = new Firestation();
+        firestation.setAddress("55 av");
+        firestation.setStation("8");
+
+        List<Firestation> firestations = new ArrayList<>();
+        firestations.add(firestation);
+
+        when(firestationRepository.findAll())
+                .thenReturn(firestations);
+
+        // WHEN
+        boolean deleted =
+                firestationService.deleteFirestation("55 av");
+
+        // THEN
+        assertTrue(deleted);
+        assertEquals(0, firestations.size());
+    }
+
+    @Test
+    void shouldReturnFalseWhenDeleteNotFound() {
+
+        // GIVEN
+        when(firestationRepository.findAll())
+                .thenReturn(new ArrayList<>());
+
+        // WHEN
+        boolean deleted =
+                firestationService.deleteFirestation("unknown");
+
+        // THEN
+        assertFalse(deleted);
+    }
+
 }
