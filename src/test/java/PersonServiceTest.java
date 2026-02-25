@@ -16,11 +16,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.service.FirestationService.calculateAge;
-import static org.junit.jupiter.api.Assertions.assertEquals; // ✅ JUnit 5
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -166,5 +166,89 @@ class PersonServiceTest {
         assertTrue(dto.foyer().contains("Sebastien Cossus"));
     }
 
+    @Test
+    void shouldAddPerson() {
+
+        List<Person> persons = new ArrayList<>();
+        when(personRepository.findAll()).thenReturn(persons);
+
+        Person person = new Person();
+        person.setFirstName("Sebastien");
+        person.setLastName("Cossus");
+
+        Person result = personService.addPerson(person);
+
+        assertEquals(1, persons.size());
+        assertEquals(person, result);
+        assertTrue(persons.contains(person));
+    }
+
+    @Test
+    void shouldUpdatePerson() {
+
+        Person existing = new Person();
+        existing.setFirstName("Sebastien");
+        existing.setLastName("Cossus");
+        existing.setAddress("Old address");
+
+        List<Person> persons = new ArrayList<>();
+        persons.add(existing);
+
+        when(personRepository.findAll()).thenReturn(persons);
+
+        Person updated = new Person();
+        updated.setFirstName("Sebastien");
+        updated.setLastName("Cossus");
+        updated.setAddress("New address");
+
+        Person result = personService.updatePerson(updated);
+
+        assertNotNull(result);
+        assertEquals("New address", persons.get(0).getAddress());
+    }
+
+    @Test
+    void shouldReturnNullWhenUpdatePersonNotFound() {
+
+        List<Person> persons = new ArrayList<>();
+        when(personRepository.findAll()).thenReturn(persons);
+
+        Person updated = new Person();
+        updated.setFirstName("Unknown");
+        updated.setLastName("Person");
+
+        Person result = personService.updatePerson(updated);
+
+        assertNull(result);
+    }
+
+    @Test
+    void shouldDeletePerson() {
+
+        Person person = new Person();
+        person.setFirstName("Sebastien");
+        person.setLastName("Cossus");
+
+        List<Person> persons = new ArrayList<>();
+        persons.add(person);
+
+        when(personRepository.findAll()).thenReturn(persons);
+
+        boolean result = personService.deletePerson("Sebastien", "Cossus");
+
+        assertTrue(result);
+        assertEquals(0, persons.size());
+    }
+
+    @Test
+    void shouldReturnFalseWhenDeletePersonNotFound() {
+
+        List<Person> persons = new ArrayList<>();
+        when(personRepository.findAll()).thenReturn(persons);
+
+        boolean result = personService.deletePerson("Unknown", "Person");
+
+        assertFalse(result);
+    }
 
 }

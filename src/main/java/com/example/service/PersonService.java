@@ -7,6 +7,7 @@ import com.example.repository.MedicalrecordRepository;
 import com.example.repository.PersonRepository;
 import com.example.service.DTO.ChildAlertDTO;
 import com.example.service.DTO.PersonInfoDTO;
+import com.example.util.DateUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -64,7 +65,8 @@ public class PersonService {
                     int age = 0;
 
                     if (medicalRecord != null) {
-                        age = calculateAge(medicalRecord.getBirthdate());
+
+                        age = DateUtils.calculateAge(medicalRecord.getBirthdate());
                     }
 
                     return new PersonInfoDTO(
@@ -80,13 +82,7 @@ public class PersonService {
                 .toList();
     }
 
-   private int calculateAge(String birthdate) {
-        java.time.LocalDate birth = java.time.LocalDate.parse(
-                birthdate,
-                java.time.format.DateTimeFormatter.ofPattern("MM/dd/yyyy")
-        );
-        return java.time.Period.between(birth, java.time.LocalDate.now()).getYears();
-    }
+
 
    public List<ChildAlertDTO> getChildByAddress(String address) {
         //recherche des persons a l'adresse
@@ -108,7 +104,7 @@ public class PersonService {
 
                    if (medicalRecord == null) return null;
 
-                   int age = calculateAge(medicalRecord.getBirthdate());
+                   int age = DateUtils.calculateAge(medicalRecord.getBirthdate());
                 // rechercher des mineurs
                    if (age >= 18) return null;
 

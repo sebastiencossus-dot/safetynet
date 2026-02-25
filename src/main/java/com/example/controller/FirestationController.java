@@ -26,10 +26,7 @@ public class FirestationController {
         return dataService.getData().getFirestations();
     }
 
-    @GetMapping("/numByAddress")
-    public List<String> getStationByAddress(@RequestParam String station) {
-        return firestationService.getStationByAddress(station);
-    }
+
 
     @GetMapping("/phoneAlert")
     public List<String> getPhoneAlert(@RequestParam String station) {

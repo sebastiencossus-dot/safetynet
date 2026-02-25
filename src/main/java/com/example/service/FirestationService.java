@@ -7,6 +7,7 @@ import com.example.repository.FirestationRepository;
 import com.example.repository.MedicalrecordRepository;
 import com.example.repository.PersonRepository;
 import com.example.service.DTO.*;
+import com.example.util.DateUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -33,9 +34,7 @@ public class FirestationService {
     }
 
 
-    public List<String> getStationByAddress(String station) {
-        return firestationRepository.findAll().stream().filter(person -> person.getStation().equalsIgnoreCase(station)).map(person -> person.getAddress()).collect(Collectors.toList());
-    }
+
 
     public List<String> getPhonesByStation(String station) {
 
@@ -61,7 +60,7 @@ public class FirestationService {
 
             Optional<Medicalrecord> medicalrecord = medicalrecords.stream().filter(m -> m.getFirstName().equalsIgnoreCase(person.getFirstName()) && m.getLastName().equalsIgnoreCase(person.getLastName())).findFirst();
             //Calculer l’âge
-            int age = medicalrecord.isEmpty() ? 0 : calculateAge(medicalrecord.get().getBirthdate());
+            int age = DateUtils.calculateAge(medicalrecord.get().getBirthdate());
 
             //Transformer chaque personne en ResidentDTO
             return new ResidentsDTO(person.getFirstName(), person.getLastName(), person.getPhone(), age, medicalrecord != null ? medicalrecord.get().getMedications() : List.of(), medicalrecord != null ? medicalrecord.get().getAllergies() : List.of());
@@ -69,12 +68,6 @@ public class FirestationService {
         //Retourner StationAdressDTO
         return new StationAdressDTO(firestation.get().getStation(), residents);
     }
-
-    public static int calculateAge(String birthdate) {
-        LocalDate birth = LocalDate.parse(birthdate, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
-        return Period.between(birth, LocalDate.now()).getYears();
-    }
-
 
     public static List<FoyerByStationDTO> getFloodByStations(List<String> stations) {
         var firestations = firestationRepository.findAll();
@@ -99,7 +92,7 @@ public class FirestationService {
                         var medicalRecord = medicalRecords.stream().filter(m -> m.getFirstName().equalsIgnoreCase(person.getFirstName()) && m.getLastName().equalsIgnoreCase(person.getLastName())).findFirst().orElse(null);
 
 
-                        int age = medicalRecord != null ? calculateAge(medicalRecord.getBirthdate()) : 0;
+                        int age = DateUtils.calculateAge(medicalRecord.getBirthdate());
 
 
                         return new MemberOfFoyerDTO(person.getFirstName(), person.getLastName(), age, medicalRecord != null ? medicalRecord.getMedications() : List.of(), medicalRecord != null ? medicalRecord.getAllergies() : List.of());
@@ -109,7 +102,6 @@ public class FirestationService {
                 return new FoyerByStationDTO(address, residents);
             }).toList();
     }
-
 
     public FirestationCoverageDTO getPersonsByStation(String station) {
 
@@ -140,9 +132,7 @@ public class FirestationService {
                     .findFirst()
                     .orElse(null);
 
-            int age = medicalRecord != null
-                    ? calculateAge(medicalRecord.getBirthdate())
-                    : 0;
+            int age = DateUtils.calculateAge(medicalRecord.getBirthdate());
 
             if (age < 18) {
                 childCount++;
