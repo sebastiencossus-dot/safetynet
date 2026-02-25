@@ -7,6 +7,7 @@ import com.example.service.MedicalrecordService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/api")
 public class MedicalrecordController {
 
     private final MedicalrecordService medicalrecordService;
